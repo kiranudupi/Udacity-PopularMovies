@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">PopularMovies-Udacity</string>
+    <string name="app_name">Popular Movies</string>
+    <string name="sort_movies_menu_item">Sort Movies</string>
+    <!--<string name="movies_loading">Loading movies&#8230;&#8230;&#8230;</string> -->
+    <string name="no_internet_connection">No Internet Connection</string>
+    <string name="retry"><u>Retry</u></string>
 </resources>
