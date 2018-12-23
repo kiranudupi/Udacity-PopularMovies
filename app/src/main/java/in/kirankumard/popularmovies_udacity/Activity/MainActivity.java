@@ -9,10 +9,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import in.kirankumard.popularmovies_udacity.Asynctasks.GetMovieDataAsyncTask;
 import in.kirankumard.popularmovies_udacity.Interfaces.GetMovieDataInterface;
+import in.kirankumard.popularmovies_udacity.Model.Movie;
 import in.kirankumard.popularmovies_udacity.R;
 import in.kirankumard.popularmovies_udacity.Utils.Utils;
 
@@ -24,7 +27,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout llErrorMessageParent;
     @BindView(R.id.tv_error_message)
     TextView tvErrorMessage;
+
     GetMovieDataInterface mGetMovieDataInterface;
+    ArrayList<Movie> moviesArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +81,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void getMovieDataCompletionHandler(Boolean success, String response) {
         if(success)
         {
-            llErrorMessageParent.setVisibility(View.GONE);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    llErrorMessageParent.setVisibility(View.GONE);
+                    pbLoadingMovies.setVisibility(View.GONE);
+                }
+            });
+
+            moviesArrayList = Utils.parseMovieJson(response);
         }
         else
         {

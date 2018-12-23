@@ -14,7 +14,7 @@ import java.net.URL;
 import in.kirankumard.popularmovies_udacity.Interfaces.GetMovieDataInterface;
 import in.kirankumard.popularmovies_udacity.Utils.Utils;
 
-public class GetMovieDataAsyncTask extends AsyncTask {
+public class GetMovieDataAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private String mUrl;
     private GetMovieDataInterface mGetMovieDataInterface;
@@ -27,7 +27,7 @@ public class GetMovieDataAsyncTask extends AsyncTask {
     }
 
     @Override
-    protected Object doInBackground(Object[] objects) {
+    protected Void doInBackground(Void... voids) {
         try {
             URL url = new URL(mUrl);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -55,4 +55,5 @@ public class GetMovieDataAsyncTask extends AsyncTask {
         }
         return null;
     }
+
 }
