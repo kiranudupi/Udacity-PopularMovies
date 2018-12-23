@@ -2,4 +2,5 @@
 <resources>
     <dimen name="small_padding">8dp</dimen>
     <dimen name="very_small_padding">4dp</dimen>
+    <dimen name="movie_poster_spacing">4dp</dimen>
 </resources>
