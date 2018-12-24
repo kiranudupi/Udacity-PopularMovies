@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,12 +23,13 @@ import butterknife.ButterKnife;
 import in.kirankumard.popularmovies_udacity.Adapters.MoviesAdapter;
 import in.kirankumard.popularmovies_udacity.Asynctasks.GetMovieDataAsyncTask;
 import in.kirankumard.popularmovies_udacity.Interfaces.GetMovieDataInterface;
+import in.kirankumard.popularmovies_udacity.Interfaces.MovieClickListerner;
 import in.kirankumard.popularmovies_udacity.Model.Movie;
 import in.kirankumard.popularmovies_udacity.R;
 import in.kirankumard.popularmovies_udacity.Utils.SpacesItemDecoration;
 import in.kirankumard.popularmovies_udacity.Utils.Utils;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, GetMovieDataInterface {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, GetMovieDataInterface, MovieClickListerner {
 
     @BindView(R.id.pb_loading_movies)
     ProgressBar pbLoadingMovies;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tvErrorMessage;
     @BindView(R.id.rv_movies_recyclerview)
     RecyclerView rvMoviesRecyclerView;
+    @BindView(R.id.tv_retry_movies) TextView tvRetryMovies;
 
     ArrayList<Movie> moviesArrayList;
 
@@ -105,9 +108,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             llErrorMessageParent.setVisibility(View.GONE);
             pbLoadingMovies.setVisibility(View.VISIBLE);
             new GetMovieDataAsyncTask(getString(R.string.movied_db_url) + getString(R.string.api_key), this).execute();
-        } else {
+        } else
             showErrorMessage(getString(R.string.no_internet_connection));
-        }
 
     }
 
@@ -119,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.ll_error_message_parent:
+            case R.id.tv_retry_movies:
                 loadMovies();
                 break;
         }
@@ -130,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void getMovieDataCompletionHandler(Boolean success, String response) {
         if (success) {
             moviesArrayList = Utils.parseMovieJson(response);
-            mAdapter = new MoviesAdapter(MainActivity.this, moviesArrayList);
+            mAdapter = new MoviesAdapter(MainActivity.this, moviesArrayList, this);
             runOnUiThread(() -> {
                 llErrorMessageParent.setVisibility(View.GONE);
                 rvMoviesRecyclerView.setAdapter(mAdapter);
@@ -141,5 +143,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             showErrorMessage(getString(R.string.failed_to_retrieve));
         }
+    }
+
+    @Override
+    public void onMovieClick(int clickedMovieIndex) {
+            Log.d("movieresponse", moviesArrayList.get(clickedMovieIndex).getmOriginalTitle());
     }
 }

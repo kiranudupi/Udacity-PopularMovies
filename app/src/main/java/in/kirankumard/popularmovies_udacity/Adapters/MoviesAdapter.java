@@ -3,6 +3,7 @@ package in.kirankumard.popularmovies_udacity.Adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import in.kirankumard.popularmovies_udacity.Interfaces.MovieClickListerner;
 import in.kirankumard.popularmovies_udacity.Model.Movie;
 import in.kirankumard.popularmovies_udacity.R;
 
@@ -20,20 +22,30 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     private ArrayList<Movie> moviesArrayList;
     private Context mContext;
+    final MovieClickListerner movieClickListerner;
 
-    public MoviesAdapter(Context context, ArrayList<Movie> moviesArrayList)
+    public MoviesAdapter(Context context, ArrayList<Movie> moviesArrayList, MovieClickListerner movieClickListerner)
     {
         this.mContext = context;
         this.moviesArrayList = moviesArrayList;
+        this.movieClickListerner = movieClickListerner;
     }
 
-    public static class MovieViewHolder extends RecyclerView.ViewHolder
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public ImageView ivMoviePoster;
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             ivMoviePoster = itemView.findViewById(R.id.iv_movie_poster);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            movieClickListerner.onMovieClick(getAdapterPosition());
+        }
+
+
     }
 
 
