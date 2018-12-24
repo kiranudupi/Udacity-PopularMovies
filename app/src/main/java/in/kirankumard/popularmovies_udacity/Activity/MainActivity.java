@@ -5,14 +5,20 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +60,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sort_movies:
+                PopupMenu sortMenu = new PopupMenu(MainActivity.this, findViewById(R.id.sort_movies));
+                sortMenu.getMenuInflater().inflate(R.menu.sort_menu, sortMenu.getMenu());
+                sortMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch (menuItem.getItemId())
+                        {
+                            case R.id.popularity:
+                                Collections.sort(moviesArrayList, new Comparator<Movie>() {
+                                    @Override
+                                    public int compare(Movie o1, Movie o2) {
+                                        return Double.compare(o1.getmPopularity(), o2.getmPopularity());
+                                    }
+                                });
+                                mAdapter.notifyDataSetChanged();
+                                return true;
+                            case R.id.rating:
+                                Collections.sort(moviesArrayList, new Comparator<Movie>() {
+                                    @Override
+                                    public int compare(Movie o1, Movie o2) {
+                                        return Double.compare(o1.getmVoteAverage(), o2.getmVoteAverage());
+                                    }
+                                });
+                                mAdapter.notifyDataSetChanged();
+                                return true;
+                        }
+                        return true;
+                    }
+                });
+                sortMenu.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
     private void setupUi() {
         ButterKnife.bind(this);
         llErrorMessageParent.setOnClickListener(this);
@@ -75,8 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void showErrorMessage(String errorMessage)
-    {
+    private void showErrorMessage(String errorMessage) {
         tvErrorMessage.setText(errorMessage);
         llErrorMessageParent.setVisibility(View.VISIBLE);
     }
@@ -93,10 +139,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void getMovieDataCompletionHandler(Boolean success, String response) {
-        if(success)
-        {
+        if (success) {
             moviesArrayList = Utils.parseMovieJson(response);
-            mAdapter = new MoviesAdapter(MainActivity.this,moviesArrayList);
+            mAdapter = new MoviesAdapter(MainActivity.this, moviesArrayList);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -107,10 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             });
 
 
-
-        }
-        else
-        {
+        } else {
             showErrorMessage(getString(R.string.failed_to_retrieve));
         }
     }

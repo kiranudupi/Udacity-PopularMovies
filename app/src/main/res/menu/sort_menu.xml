@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/popularity" android:title="@string/popularity_menu_item" />
+    <item android:id="@+id/rating" android:title="@string/rating_menu_item" />
+</menu>

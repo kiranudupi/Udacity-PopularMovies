@@ -8,4 +8,6 @@
     <string name="api_key">ba30785252340f200b47d8921a80dc57</string>
     <string name="movied_db_url">http://api.themoviedb.org/3/movie/popular?api_key=</string>
     <string name="movie_poster_url">http://image.tmdb.org/t/p/w185/</string>
+    <string name="popularity_menu_item">Popularity</string>
+    <string name="rating_menu_item">Rating</string>
 </resources>
