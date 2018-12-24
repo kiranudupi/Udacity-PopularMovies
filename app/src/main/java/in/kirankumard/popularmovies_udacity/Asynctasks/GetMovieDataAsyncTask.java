@@ -1,7 +1,6 @@
 package in.kirankumard.popularmovies_udacity.Asynctasks;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -38,20 +37,16 @@ public class GetMovieDataAsyncTask extends AsyncTask<Void, Void, Void> {
 
             int statusCode = urlConnection.getResponseCode();
 
-            if (statusCode ==  200) {
+            if (statusCode == 200) {
 
                 InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 mResponse = Utils.convertInputStreamToString(inputStream);
-                mGetMovieDataInterface.getMovieDataCompletionHandler(true,mResponse);
+                mGetMovieDataInterface.getMovieDataCompletionHandler(true, mResponse);
             } else {
-                mGetMovieDataInterface.getMovieDataCompletionHandler(false,mResponse);
+                mGetMovieDataInterface.getMovieDataCompletionHandler(false, mResponse);
             }
-        } catch (MalformedURLException e) {
-            mGetMovieDataInterface.getMovieDataCompletionHandler(false,mResponse);
-        } catch (ProtocolException e) {
-            mGetMovieDataInterface.getMovieDataCompletionHandler(false,mResponse);
         } catch (IOException e) {
-            mGetMovieDataInterface.getMovieDataCompletionHandler(false,mResponse);
+            mGetMovieDataInterface.getMovieDataCompletionHandler(false, mResponse);
         }
         return null;
     }

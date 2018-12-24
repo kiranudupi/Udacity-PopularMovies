@@ -1,9 +1,9 @@
 package in.kirankumard.popularmovies_udacity.Model;
 
 public class Movie {
-    int mId, mVoteCount;
-    double mVoteAverage, mPopularity;
-    String mPosterPath, mOriginalTitle, mOverview, mReleaseDate;
+    private int mId, mVoteCount;
+    private double mVoteAverage, mPopularity;
+    private String mPosterPath, mOriginalTitle, mOverview, mReleaseDate;
 
     public Movie(int mId, int mVoteCount, double mVoteAverage, double mPopularity, String mPosterPath, String mOriginalTitle, String mOverview, String mReleaseDate) {
         this.mId = mId;

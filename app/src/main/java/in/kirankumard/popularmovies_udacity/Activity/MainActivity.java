@@ -3,10 +3,7 @@ package in.kirankumard.popularmovies_udacity.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<Movie> moviesArrayList;
 
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,32 +63,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.sort_movies:
                 PopupMenu sortMenu = new PopupMenu(MainActivity.this, findViewById(R.id.sort_movies));
                 sortMenu.getMenuInflater().inflate(R.menu.sort_menu, sortMenu.getMenu());
-                sortMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
+                sortMenu.setOnMenuItemClickListener((MenuItem menuItem) -> {
                         switch (menuItem.getItemId())
                         {
                             case R.id.popularity:
-                                Collections.sort(moviesArrayList, new Comparator<Movie>() {
-                                    @Override
-                                    public int compare(Movie o1, Movie o2) {
+                                Collections.sort(moviesArrayList,(Movie o1, Movie o2) -> {
                                         return Double.compare(o1.getmPopularity(), o2.getmPopularity());
-                                    }
                                 });
                                 mAdapter.notifyDataSetChanged();
                                 return true;
                             case R.id.rating:
-                                Collections.sort(moviesArrayList, new Comparator<Movie>() {
-                                    @Override
-                                    public int compare(Movie o1, Movie o2) {
+                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> {
                                         return Double.compare(o1.getmVoteAverage(), o2.getmVoteAverage());
-                                    }
                                 });
                                 mAdapter.notifyDataSetChanged();
                                 return true;
                         }
                         return true;
-                    }
+
                 });
                 sortMenu.show();
                 return true;
@@ -105,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
         llErrorMessageParent.setOnClickListener(this);
         rvMoviesRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new GridLayoutManager(this, 2);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
         rvMoviesRecyclerView.setLayoutManager(mLayoutManager);
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.movie_poster_spacing);
         rvMoviesRecyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
@@ -142,13 +131,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (success) {
             moviesArrayList = Utils.parseMovieJson(response);
             mAdapter = new MoviesAdapter(MainActivity.this, moviesArrayList);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    llErrorMessageParent.setVisibility(View.GONE);
-                    rvMoviesRecyclerView.setAdapter(mAdapter);
-                    pbLoadingMovies.setVisibility(View.GONE);
-                }
+            runOnUiThread(() -> {
+                llErrorMessageParent.setVisibility(View.GONE);
+                rvMoviesRecyclerView.setAdapter(mAdapter);
+                pbLoadingMovies.setVisibility(View.GONE);
             });
 
 
