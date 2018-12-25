@@ -18,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import in.kirankumard.popularmovies_udacity.Adapters.MoviesAdapter;
 import in.kirankumard.popularmovies_udacity.Asynctasks.GetMovieDataAsyncTask;
+import in.kirankumard.popularmovies_udacity.Constants.Constants;
 import in.kirankumard.popularmovies_udacity.Interfaces.GetMovieDataInterface;
 import in.kirankumard.popularmovies_udacity.Interfaces.MovieClickListerner;
 import in.kirankumard.popularmovies_udacity.Model.Movie;
@@ -67,16 +68,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     switch (menuItem.getItemId()) {
                         case R.id.popularity:
                             try {
-                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o1.getmPopularity(), o2.getmPopularity()));
+                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o2.getmPopularity(), o1.getmPopularity()));
                                 mAdapter.notifyDataSetChanged();
-                            } catch (Exception e) {
+                            } catch (Exception ignored) {
 
                             }
 
                             return true;
                         case R.id.rating:
                             try {
-                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o1.getmVoteAverage(), o2.getmVoteAverage()));
+                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o2.getmVoteAverage(), o1.getmVoteAverage()));
                                 mAdapter.notifyDataSetChanged();
                             } catch (Exception e) {
 
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rvMoviesRecyclerView.setLayoutManager(mLayoutManager);
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.movie_poster_spacing);
         rvMoviesRecyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
+        tvRetryMovies.setOnClickListener(this);
     }
 
     private void loadMovies() {
@@ -145,15 +147,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         } else {
-            runOnUiThread(() -> {
-                showErrorMessage(getString(R.string.failed_to_retrieve));
-            });
+            runOnUiThread(() -> showErrorMessage(getString(R.string.failed_to_retrieve)));
         }
     }
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
         Intent movieDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
+        movieDetailIntent.putExtra(Constants.MOVIE_INTENT_KEY,moviesArrayList.get(clickedMovieIndex));
         startActivity(movieDetailIntent);
     }
 }

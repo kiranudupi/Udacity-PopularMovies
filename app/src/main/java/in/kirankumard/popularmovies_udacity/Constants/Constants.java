@@ -13,4 +13,6 @@ public class Constants {
     public static final String POPULARITY_KEY = "popularity";
     public static final String BACKDROP_PATH_KEY = "backdrop_path";
 
+    public static final String MOVIE_INTENT_KEY = "movie";
+
 }
