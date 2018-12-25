@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tvErrorMessage;
     @BindView(R.id.rv_movies_recyclerview)
     RecyclerView rvMoviesRecyclerView;
-    @BindView(R.id.tv_retry_movies) TextView tvRetryMovies;
+    @BindView(R.id.tv_retry_movies)
+    TextView tvRetryMovies;
 
     ArrayList<Movie> moviesArrayList;
 
@@ -67,22 +68,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 PopupMenu sortMenu = new PopupMenu(MainActivity.this, findViewById(R.id.sort_movies));
                 sortMenu.getMenuInflater().inflate(R.menu.sort_menu, sortMenu.getMenu());
                 sortMenu.setOnMenuItemClickListener((MenuItem menuItem) -> {
-                        switch (menuItem.getItemId())
-                        {
-                            case R.id.popularity:
-                                Collections.sort(moviesArrayList,(Movie o1, Movie o2) -> {
-                                        return Double.compare(o1.getmPopularity(), o2.getmPopularity());
-                                });
+                    switch (menuItem.getItemId()) {
+                        case R.id.popularity:
+                            try {
+                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o1.getmPopularity(), o2.getmPopularity()));
                                 mAdapter.notifyDataSetChanged();
-                                return true;
-                            case R.id.rating:
-                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> {
-                                        return Double.compare(o1.getmVoteAverage(), o2.getmVoteAverage());
-                                });
+                            }
+                            catch (Exception e)
+                            {
+
+                            }
+
+                            return true;
+                        case R.id.rating:
+                            try {
+                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o1.getmVoteAverage(), o2.getmVoteAverage()));
                                 mAdapter.notifyDataSetChanged();
-                                return true;
-                        }
-                        return true;
+                            }
+                            catch (Exception e)
+                            {
+
+                            }
+                            return true;
+                    }
+                    return true;
 
                 });
                 sortMenu.show();
@@ -108,14 +117,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             llErrorMessageParent.setVisibility(View.GONE);
             pbLoadingMovies.setVisibility(View.VISIBLE);
             new GetMovieDataAsyncTask(getString(R.string.movied_db_url) + getString(R.string.api_key), this).execute();
-        } else
+        } else {
             showErrorMessage(getString(R.string.no_internet_connection));
+        }
+
 
     }
 
     private void showErrorMessage(String errorMessage) {
         tvErrorMessage.setText(errorMessage);
         llErrorMessageParent.setVisibility(View.VISIBLE);
+        pbLoadingMovies.setVisibility(View.GONE);
     }
 
     @Override
@@ -141,12 +153,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         } else {
-            showErrorMessage(getString(R.string.failed_to_retrieve));
+            runOnUiThread(() -> {
+                showErrorMessage(getString(R.string.failed_to_retrieve));
+            });
         }
     }
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
-            Log.d("movieresponse", moviesArrayList.get(clickedMovieIndex).getmOriginalTitle());
+
     }
 }
