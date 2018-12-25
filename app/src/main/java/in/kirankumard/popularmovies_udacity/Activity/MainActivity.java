@@ -44,11 +44,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<Movie> moviesArrayList;
 
     private RecyclerView.Adapter mAdapter;
+    RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (moviesArrayList != null)
             outState.putParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY, moviesArrayList);
+        if(mLayoutManager != null)
+            outState.putParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION, mLayoutManager.onSaveInstanceState());
         super.onSaveInstanceState(outState);
     }
 
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             loadMovies();
         else {
             moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
+            mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
             showMovies();
         }
     }
@@ -112,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
         llErrorMessageParent.setOnClickListener(this);
         rvMoviesRecyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+        mLayoutManager = new GridLayoutManager(this, 2);
         rvMoviesRecyclerView.setLayoutManager(mLayoutManager);
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.movie_poster_spacing);
         rvMoviesRecyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
@@ -151,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void getMovieDataCompletionHandler(Boolean success, String response) {
         if (success) {
             moviesArrayList = Utils.parseMovieJson(response);
+            Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o2.getmPopularity(), o1.getmPopularity()));
             showMovies();
         } else {
             runOnUiThread(() -> showErrorMessage(getString(R.string.failed_to_retrieve)));
