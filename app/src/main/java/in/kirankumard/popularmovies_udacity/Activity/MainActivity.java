@@ -12,8 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.Collections;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import in.kirankumard.popularmovies_udacity.Adapters.MoviesAdapter;
@@ -43,13 +45,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private RecyclerView.Adapter mAdapter;
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (moviesArrayList != null)
+            outState.putParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY, moviesArrayList);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupUi();
-        loadMovies();
+        if (savedInstanceState == null || !savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
+            loadMovies();
+        else {
+            moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
+            showMovies();
+        }
     }
 
     @Override
@@ -138,23 +151,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void getMovieDataCompletionHandler(Boolean success, String response) {
         if (success) {
             moviesArrayList = Utils.parseMovieJson(response);
-            mAdapter = new MoviesAdapter(MainActivity.this, moviesArrayList, this);
-            runOnUiThread(() -> {
-                llErrorMessageParent.setVisibility(View.GONE);
-                rvMoviesRecyclerView.setAdapter(mAdapter);
-                pbLoadingMovies.setVisibility(View.GONE);
-            });
-
-
+            showMovies();
         } else {
             runOnUiThread(() -> showErrorMessage(getString(R.string.failed_to_retrieve)));
         }
     }
 
+    private void showMovies() {
+        mAdapter = new MoviesAdapter(MainActivity.this, moviesArrayList, this);
+        runOnUiThread(() -> {
+            llErrorMessageParent.setVisibility(View.GONE);
+            rvMoviesRecyclerView.setAdapter(mAdapter);
+            pbLoadingMovies.setVisibility(View.GONE);
+        });
+
+    }
+
     @Override
     public void onMovieClick(int clickedMovieIndex) {
         Intent movieDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
-        movieDetailIntent.putExtra(Constants.MOVIE_INTENT_KEY,moviesArrayList.get(clickedMovieIndex));
+        movieDetailIntent.putExtra(Constants.MOVIE_INTENT_KEY, moviesArrayList.get(clickedMovieIndex));
         startActivity(movieDetailIntent);
     }
 }

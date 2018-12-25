@@ -33,6 +33,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/small_padding"
+                    android:layout_marginEnd="@dimen/small_padding"
                     android:drawableStart="@drawable/ic_rating"
                     android:textColor="@color/black"
                     android:textSize="@dimen/rating_text_size"
