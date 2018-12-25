@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         setupUi();
         if (savedInstanceState == null || !savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
-            loadMovies();
+            loadMovies(R.string.movied_db_url_popularity);
         else {
             moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
             mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
@@ -84,21 +84,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sortMenu.setOnMenuItemClickListener((MenuItem menuItem) -> {
                     switch (menuItem.getItemId()) {
                         case R.id.popularity:
-                            try {
-                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o2.getmPopularity(), o1.getmPopularity()));
-                                mAdapter.notifyDataSetChanged();
-                            } catch (Exception ignored) {
-
-                            }
-
+                            loadMovies(R.string.movied_db_url_popularity);
                             return true;
                         case R.id.rating:
-                            try {
-                                Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o2.getmVoteAverage(), o1.getmVoteAverage()));
-                                mAdapter.notifyDataSetChanged();
-                            } catch (Exception e) {
-
-                            }
+                            loadMovies(R.string.movied_db_url_rating);
                             return true;
                     }
                     return true;
@@ -114,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setupUi() {
         ButterKnife.bind(this);
-        llErrorMessageParent.setOnClickListener(this);
+        rvMoviesRecyclerView.setVisibility(View.VISIBLE);
         rvMoviesRecyclerView.setHasFixedSize(true);
         mLayoutManager = new GridLayoutManager(this, 2);
         rvMoviesRecyclerView.setLayoutManager(mLayoutManager);
@@ -123,11 +112,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvRetryMovies.setOnClickListener(this);
     }
 
-    private void loadMovies() {
+    private void loadMovies(int sortOrder) {
         if (Utils.isConnectedToInternet(this)) {
             llErrorMessageParent.setVisibility(View.GONE);
             pbLoadingMovies.setVisibility(View.VISIBLE);
-            new GetMovieDataAsyncTask(getString(R.string.movied_db_url) + getString(R.string.api_key), this).execute();
+            new GetMovieDataAsyncTask(getString(sortOrder) + getString(R.string.api_key), this).execute();
         } else {
             showErrorMessage(getString(R.string.no_internet_connection));
         }
@@ -139,13 +128,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvErrorMessage.setText(errorMessage);
         llErrorMessageParent.setVisibility(View.VISIBLE);
         pbLoadingMovies.setVisibility(View.GONE);
+        rvMoviesRecyclerView.setVisibility(View.GONE);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_retry_movies:
-                loadMovies();
+                loadMovies(R.string.movied_db_url_popularity);
                 break;
         }
     }
@@ -166,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter = new MoviesAdapter(MainActivity.this, moviesArrayList, this);
         runOnUiThread(() -> {
             llErrorMessageParent.setVisibility(View.GONE);
+            rvMoviesRecyclerView.setVisibility(View.VISIBLE);
             rvMoviesRecyclerView.setAdapter(mAdapter);
             pbLoadingMovies.setVisibility(View.GONE);
         });
