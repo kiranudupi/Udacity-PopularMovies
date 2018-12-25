@@ -3,9 +3,9 @@ package in.kirankumard.popularmovies_udacity.Model;
 public class Movie {
     private int mId, mVoteCount;
     private double mVoteAverage, mPopularity;
-    private String mPosterPath, mOriginalTitle, mOverview, mReleaseDate;
+    private String mPosterPath, mOriginalTitle, mOverview, mReleaseDate, mBackdropPath;
 
-    public Movie(int mId, int mVoteCount, double mVoteAverage, double mPopularity, String mPosterPath, String mOriginalTitle, String mOverview, String mReleaseDate) {
+    public Movie(int mId, int mVoteCount, double mVoteAverage, double mPopularity, String mPosterPath, String mOriginalTitle, String mOverview, String mReleaseDate, String mBackdropPath) {
         this.mId = mId;
         this.mVoteCount = mVoteCount;
         this.mVoteAverage = mVoteAverage;
@@ -14,6 +14,7 @@ public class Movie {
         this.mOriginalTitle = mOriginalTitle;
         this.mOverview = mOverview;
         this.mReleaseDate = mReleaseDate;
+        this.mBackdropPath = mBackdropPath;
     }
 
     public int getmId() {
@@ -22,6 +23,14 @@ public class Movie {
 
     public void setmId(int mId) {
         this.mId = mId;
+    }
+
+    public String getmBackdropPath() {
+        return mBackdropPath;
+    }
+
+    public void setmBackdropPath(String mBackdropPath) {
+        this.mBackdropPath = mBackdropPath;
     }
 
     public int getmVoteCount() {

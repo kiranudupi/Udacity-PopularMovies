@@ -49,7 +49,7 @@ public class Utils {
             JSONArray results = response.getJSONArray(Constants.RESULT_KEY);
             for(int i = 0; i < results.length(); i++)
             {
-                Movie movie = new Movie(results.getJSONObject(i).getInt(Constants.ID_KEY),results.getJSONObject(i).getInt(Constants.VOTE_COUNT_KEY),results.getJSONObject(i).getDouble(Constants.VOTE_AVERAGE_KEY),results.getJSONObject(i).getDouble(Constants.POPULARITY_KEY),results.getJSONObject(i).getString(Constants.POSTER_PATH_KEY),results.getJSONObject(i).getString(Constants.TITLE_KEY),results.getJSONObject(i).getString(Constants.OVERVIEW_KEY),results.getJSONObject(i).getString(Constants.RELEASE_DATE_KEY));
+                Movie movie = new Movie(results.getJSONObject(i).getInt(Constants.ID_KEY),results.getJSONObject(i).getInt(Constants.VOTE_COUNT_KEY),results.getJSONObject(i).getDouble(Constants.VOTE_AVERAGE_KEY),results.getJSONObject(i).getDouble(Constants.POPULARITY_KEY),results.getJSONObject(i).getString(Constants.POSTER_PATH_KEY),results.getJSONObject(i).getString(Constants.TITLE_KEY),results.getJSONObject(i).getString(Constants.OVERVIEW_KEY),results.getJSONObject(i).getString(Constants.RELEASE_DATE_KEY), results.getJSONObject(i).getString(Constants.BACKDROP_PATH_KEY));
                 moviesArrayList.add(movie);
             }
         } catch (JSONException e) {

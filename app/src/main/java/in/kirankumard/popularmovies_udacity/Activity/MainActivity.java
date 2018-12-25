@@ -1,10 +1,10 @@
 package in.kirankumard.popularmovies_udacity.Activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,12 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import in.kirankumard.popularmovies_udacity.Adapters.MoviesAdapter;
@@ -73,9 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             try {
                                 Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o1.getmPopularity(), o2.getmPopularity()));
                                 mAdapter.notifyDataSetChanged();
-                            }
-                            catch (Exception e)
-                            {
+                            } catch (Exception e) {
 
                             }
 
@@ -84,9 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             try {
                                 Collections.sort(moviesArrayList, (Movie o1, Movie o2) -> Double.compare(o1.getmVoteAverage(), o2.getmVoteAverage()));
                                 mAdapter.notifyDataSetChanged();
-                            }
-                            catch (Exception e)
-                            {
+                            } catch (Exception e) {
 
                             }
                             return true;
@@ -161,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
-
+        Intent movieDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
+        startActivity(movieDetailIntent);
     }
 }
