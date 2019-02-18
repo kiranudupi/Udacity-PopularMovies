@@ -5,8 +5,8 @@
     <string name="no_internet_connection">No Internet Connection</string>
     <string name="failed_to_retrieve">Could not load movies</string>
     <string name="retry"><u>Retry</u></string>
-    <string name="api_key"></string>
-    <string name="movied_db_url_popularity">http://api.themoviedb.org/3/movie/popular?api_key=</string>
+    <string name="api_key">ba30785252340f200b47d8921a80dc57</string>
+    <string name="movied_db_url_popularity">https://api.themoviedb.org/3/movie/popular?api_key=</string>
     <string name="movied_db_url_rating">http://api.themoviedb.org/3/movie/top_rated?api_key=</string>
     <string name="movie_poster_url">http://image.tmdb.org/t/p/w185/</string>
     <string name="movie_backdrop_url">http://image.tmdb.org/t/p/original/</string>
