@@ -72,4 +72,19 @@ public class Utils {
         return trailersArraylist;
     }
 
+    public static ArrayList<String> parseReviewsJson(String reviewsJson) {
+        ArrayList<String> trailersArraylist = new ArrayList<String>();
+        try {
+            JSONObject response = new JSONObject(reviewsJson);
+            JSONArray results = response.getJSONArray(Constants.RESULT_KEY);
+            for (int i = 0; i < results.length(); i++) {
+                trailersArraylist.add(results.getJSONObject(i).getString(Constants.REVIEW_KEY));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return trailersArraylist;
+    }
+
 }

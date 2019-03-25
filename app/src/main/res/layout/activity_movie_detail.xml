@@ -114,6 +114,27 @@
                 />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_reviews_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@color/overview_background"
+            android:layout_below="@id/ll_trailers_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/reviews_title"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginBottom="@dimen/small_padding"
+                />
+        </LinearLayout>
+
 
     </RelativeLayout>
 </ScrollView>

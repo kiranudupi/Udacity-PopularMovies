@@ -20,5 +20,7 @@ public class Constants {
     public static final String TRAILER_TYPE_KEY = "type";
     public static final String TRAILER_TYPE_VALUE = "Trailer";
     public static final String TRAILER_KEY = "key";
+    public static final String REVIEW_KEY = "content";
+
 
 }

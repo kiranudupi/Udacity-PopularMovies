@@ -61,6 +61,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     @BindView(R.id.ll_trailers_parent)
     LinearLayout llTrailersParent;
 
+    @BindView(R.id.ll_reviews_parent)
+    LinearLayout llReviewsParent;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,6 +90,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         GetTrailersAsyncTask getTrailersAsyncTask = new GetTrailersAsyncTask(movie.getmId());
         getTrailersAsyncTask.execute();
 
+        GetReviewsAsyncTask getReviewsAsyncTask = new GetReviewsAsyncTask(movie.getmId());
+        getReviewsAsyncTask.execute();
+
     }
 
     void showTrailers(ArrayList<String> trailersArray) {
@@ -112,6 +118,38 @@ public class MovieDetailActivity extends AppCompatActivity {
                 llTrailersParent.addView(trailer);
             }
         }
+
+
+
+    }
+
+    void showReviews(ArrayList<String> reviewsArray) {
+        if(reviewsArray == null)
+        {
+            for (int i = 0; i < 3; i++) {
+                TextView trailer = new TextView(MovieDetailActivity.this);
+                LinearLayout.LayoutParams trailerLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                trailerLayoutParams.setMargins(0,0,0,16);
+                trailer.setLayoutParams(trailerLayoutParams);
+                trailer.setPadding(8,8,8,8);
+                trailer.setBackgroundColor(getResources().getColor(R.color.white));
+                trailer.setText("dasdasd aaksd ajd ad akd akd ad askd akd ajskd akjsd ask daskjdaksjdjasdkasdjkad askd askj dadaskdakjsdjkasdkasdkasdkas");
+                //trailer.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_black_18dp, 0, 0, 0);
+                //String url = getResources().getString(R.string.trailers_url) + trailersArray.get(i);
+                String url = "https://www.youtube.com/watch?v=K_tLp7T6U1c";
+                trailer.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url));
+                        startActivity(i);
+                    }
+                });
+                llReviewsParent.addView(trailer);
+            }
+        }
+
+
 
     }
 
@@ -165,5 +203,54 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
     }
 
+    public class GetReviewsAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
+
+        int movieID;
+        private String mResponse;
+
+        public GetReviewsAsyncTask(int id) {
+            this.movieID = id;
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(Void... voids) {
+            try {
+                URL url = new URL(getResources().getString(R.string.movies_reviews_url_primary) + this.movieID + getResources().getString(R.string.movies_reviews_url_secondary) + getResources().getString(R.string.api_key));
+                Log.v("responseabc", url.toString());
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoInput(true);
+                urlConnection.setDoOutput(true);
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+                urlConnection.setRequestMethod("POST");
+
+                int statusCode = urlConnection.getResponseCode();
+
+                if (statusCode == 200) {
+
+                    InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                    mResponse = Utils.convertInputStreamToString(inputStream);
+
+                    Log.v("responseabc", mResponse);
+                    Log.v("responseabc", "4");
+                    return Utils.parseReviewsJson(mResponse);
+                } else {
+                    Log.v("responseabc", "5 " + statusCode);
+                }
+            } catch (
+                    IOException e) {
+                Log.v("responseabc", "6");
+            }
+            finally {
+
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> strings) {
+            super.onPostExecute(strings);
+            showReviews(strings);
+        }
+    }
 
 }
