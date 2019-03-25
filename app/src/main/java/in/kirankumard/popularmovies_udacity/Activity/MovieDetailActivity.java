@@ -98,15 +98,15 @@ public class MovieDetailActivity extends AppCompatActivity {
     void showTrailers(ArrayList<String> trailersArray) {
         if(trailersArray != null)
         {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < trailersArray.size(); i++) {
                 TextView trailer = new TextView(MovieDetailActivity.this);
                 LinearLayout.LayoutParams trailerLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 trailer.setLayoutParams(trailerLayoutParams);
                 trailer.setPadding(8, 16, 8, 16);
                 trailer.setText("Trailer " + (i+1));
                 trailer.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_black_18dp, 0, 0, 0);
-                //String url = getResources().getString(R.string.trailers_url) + trailersArray.get(i);
-                String url = "https://www.youtube.com/watch?v=K_tLp7T6U1c";
+                String url = getResources().getString(R.string.trailers_url) + trailersArray.get(i);
+                //String url = "https://www.youtube.com/watch?v=K_tLp7T6U1c";
                 trailer.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -124,16 +124,16 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     void showReviews(ArrayList<String> reviewsArray) {
-        if(reviewsArray == null)
+        if(reviewsArray != null)
         {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < reviewsArray.size(); i++) {
                 TextView trailer = new TextView(MovieDetailActivity.this);
                 LinearLayout.LayoutParams trailerLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 trailerLayoutParams.setMargins(0,0,0,16);
                 trailer.setLayoutParams(trailerLayoutParams);
                 trailer.setPadding(8,8,8,8);
                 trailer.setBackgroundColor(getResources().getColor(R.color.white));
-                trailer.setText("dasdasd aaksd ajd ad akd akd ad askd akd ajskd akjsd ask daskjdaksjdjasdkasdjkad askd askj dadaskdakjsdjkasdkasdkasdkas");
+                trailer.setText(reviewsArray.get(i));
                 //trailer.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_black_18dp, 0, 0, 0);
                 //String url = getResources().getString(R.string.trailers_url) + trailersArray.get(i);
                 String url = "https://www.youtube.com/watch?v=K_tLp7T6U1c";
