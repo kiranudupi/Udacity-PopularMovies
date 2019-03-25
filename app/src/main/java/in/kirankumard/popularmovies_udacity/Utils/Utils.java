@@ -19,8 +19,7 @@ import in.kirankumard.popularmovies_udacity.Model.Movie;
 
 public class Utils {
 
-    public static boolean isConnectedToInternet(Context context)
-    {
+    public static boolean isConnectedToInternet(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -28,11 +27,11 @@ public class Utils {
     }
 
     public static String convertInputStreamToString(InputStream inputStream) {
-        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder sb = new StringBuilder();
         String line;
         try {
-            while((line = bufferedReader.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
         } catch (IOException e) {
@@ -41,21 +40,36 @@ public class Utils {
         return sb.toString();
     }
 
-    public static ArrayList<Movie> parseMovieJson(String movieJsonString)
-    {
+    public static ArrayList<Movie> parseMovieJson(String movieJsonString) {
         ArrayList<Movie> moviesArrayList = new ArrayList<Movie>();
         try {
             JSONObject response = new JSONObject(movieJsonString);
             JSONArray results = response.getJSONArray(Constants.RESULT_KEY);
-            for(int i = 0; i < results.length(); i++)
-            {
-                Movie movie = new Movie(results.getJSONObject(i).getInt(Constants.ID_KEY),results.getJSONObject(i).getInt(Constants.VOTE_COUNT_KEY),results.getJSONObject(i).getDouble(Constants.VOTE_AVERAGE_KEY),results.getJSONObject(i).getDouble(Constants.POPULARITY_KEY),results.getJSONObject(i).getString(Constants.POSTER_PATH_KEY),results.getJSONObject(i).getString(Constants.TITLE_KEY),results.getJSONObject(i).getString(Constants.OVERVIEW_KEY),results.getJSONObject(i).getString(Constants.RELEASE_DATE_KEY), results.getJSONObject(i).getString(Constants.BACKDROP_PATH_KEY));
+            for (int i = 0; i < results.length(); i++) {
+                Movie movie = new Movie(results.getJSONObject(i).getInt(Constants.ID_KEY), results.getJSONObject(i).getInt(Constants.VOTE_COUNT_KEY), results.getJSONObject(i).getDouble(Constants.VOTE_AVERAGE_KEY), results.getJSONObject(i).getDouble(Constants.POPULARITY_KEY), results.getJSONObject(i).getString(Constants.POSTER_PATH_KEY), results.getJSONObject(i).getString(Constants.TITLE_KEY), results.getJSONObject(i).getString(Constants.OVERVIEW_KEY), results.getJSONObject(i).getString(Constants.RELEASE_DATE_KEY), results.getJSONObject(i).getString(Constants.BACKDROP_PATH_KEY));
                 moviesArrayList.add(movie);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return moviesArrayList;
+    }
+
+    public static ArrayList<String> parseTrailerJson(String trailerJson) {
+        ArrayList<String> trailersArraylist = new ArrayList<String>();
+        try {
+            JSONObject response = new JSONObject(trailerJson);
+            JSONArray results = response.getJSONArray(Constants.RESULT_KEY);
+            for (int i = 0; i < results.length(); i++) {
+                if (results.getJSONObject(i).getString(Constants.TRAILER_TYPE_KEY) == Constants.TRAILER_TYPE_VALUE) {
+                    trailersArraylist.add(results.getJSONObject(i).getString(Constants.TRAILER_KEY));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return trailersArraylist;
     }
 
 }

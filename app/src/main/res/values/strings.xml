@@ -8,10 +8,14 @@
     <string name="api_key">ba30785252340f200b47d8921a80dc57</string>
     <string name="movied_db_url_popularity">https://api.themoviedb.org/3/movie/popular?api_key=</string>
     <string name="movied_db_url_rating">http://api.themoviedb.org/3/movie/top_rated?api_key=</string>
+    <string name="movies_trailer_url_primary">https://api.themoviedb.org/3/movie/</string>
+    <string name="movies_trailer_url_secondary">/videos?api_key=</string>
     <string name="movie_poster_url">http://image.tmdb.org/t/p/w185/</string>
     <string name="movie_backdrop_url">http://image.tmdb.org/t/p/original/</string>
     <string name="popularity_menu_item">Popularity</string>
     <string name="rating_menu_item">Rating</string>
     <string name="movie_vote">%d votes</string>
     <string name="movie_release_date">Released On: %s</string>
+    <string name="trailers_title">Trailers</string>
+    <string name="trailers_url">https://www.youtube.com/watch?v=</string>
 </resources>

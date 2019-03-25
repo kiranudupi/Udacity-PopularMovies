@@ -17,4 +17,8 @@ public class Constants {
     public static final String BUNDLE_MOVIES_ARRAYLIST_KEY = "moviesArrayList";
     public static final String BUNDLE_RECYCLERVIEW_POSITION = "recyclerviewPosition";
 
+    public static final String TRAILER_TYPE_KEY = "type";
+    public static final String TRAILER_TYPE_VALUE = "Trailer";
+    public static final String TRAILER_KEY = "key";
+
 }

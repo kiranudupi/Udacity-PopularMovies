@@ -91,9 +91,28 @@
             android:layout_below="@id/tv_release_date"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
+
             android:background="@color/overview_background"
             android:padding="@dimen/padding_16dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_trailers_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_overview"
+            android:padding="@dimen/padding_16dp"
+            android:background="@color/white"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/trailers_title"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                />
+        </LinearLayout>
 
 
     </RelativeLayout>
