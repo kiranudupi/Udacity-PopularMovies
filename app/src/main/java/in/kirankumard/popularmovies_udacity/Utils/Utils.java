@@ -3,6 +3,7 @@ package in.kirankumard.popularmovies_udacity.Utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +62,9 @@ public class Utils {
             JSONObject response = new JSONObject(trailerJson);
             JSONArray results = response.getJSONArray(Constants.RESULT_KEY);
             for (int i = 0; i < results.length(); i++) {
-                if (results.getJSONObject(i).getString(Constants.TRAILER_TYPE_KEY) == Constants.TRAILER_TYPE_VALUE) {
+                Log.i("responseabc","left" + results.getJSONObject(i).getString(Constants.TRAILER_TYPE_KEY));
+                Log.i("responseabc","right" + Constants.TRAILER_TYPE_VALUE);
+                if ((results.getJSONObject(i).getString(Constants.TRAILER_TYPE_KEY)).equals(Constants.TRAILER_TYPE_VALUE)) {
                     trailersArraylist.add(results.getJSONObject(i).getString(Constants.TRAILER_KEY));
                 }
             }

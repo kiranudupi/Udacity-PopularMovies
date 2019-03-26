@@ -1,15 +1,10 @@
 package in.kirankumard.popularmovies_udacity.Activity;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -19,8 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -111,6 +104,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
+                        Log.i("responseabc", url);
                         i.setData(Uri.parse(url));
                         startActivity(i);
                     }
@@ -168,10 +162,10 @@ public class MovieDetailActivity extends AppCompatActivity {
                 URL url = new URL(getResources().getString(R.string.movies_trailer_url_primary) + this.movieID + getResources().getString(R.string.movies_trailer_url_secondary) + getResources().getString(R.string.api_key));
                 Log.v("responseabc", url.toString());
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoInput(true);
-                urlConnection.setDoOutput(true);
+                //urlConnection.setDoInput(true);
+                //urlConnection.setDoOutput(true);
                 urlConnection.setRequestProperty("Content-Type", "application/json");
-                urlConnection.setRequestMethod("POST");
+                urlConnection.setRequestMethod("GET");
 
                 int statusCode = urlConnection.getResponseCode();
 
@@ -184,7 +178,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                     Log.v("responseabc", "");
                     return Utils.parseTrailerJson(mResponse);
                 } else {
-                    Log.v("responseabc", "2 " + statusCode);
+                    Log.v("responseabc", "2 " + statusCode + "\n" + mResponse);
                 }
             } catch (
                     IOException e) {
@@ -199,6 +193,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<String> strings) {
             super.onPostExecute(strings);
+            Log.i("responseabc", "trailers: " + strings);
             showTrailers(strings);
         }
     }
@@ -218,10 +213,10 @@ public class MovieDetailActivity extends AppCompatActivity {
                 URL url = new URL(getResources().getString(R.string.movies_reviews_url_primary) + this.movieID + getResources().getString(R.string.movies_reviews_url_secondary) + getResources().getString(R.string.api_key));
                 Log.v("responseabc", url.toString());
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoInput(true);
-                urlConnection.setDoOutput(true);
+                //urlConnection.setDoInput(true);
+                //urlConnection.setDoOutput(true);
                 urlConnection.setRequestProperty("Content-Type", "application/json");
-                urlConnection.setRequestMethod("POST");
+                urlConnection.setRequestMethod("GET");
 
                 int statusCode = urlConnection.getResponseCode();
 

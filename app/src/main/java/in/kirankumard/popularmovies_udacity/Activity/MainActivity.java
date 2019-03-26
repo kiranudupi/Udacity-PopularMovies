@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         case R.id.rating:
                             loadMovies(R.string.movied_db_url_rating);
                             return true;
+                        case R.id.favourites:
+                            loadFavourites();
+                            return true;
                     }
                     return true;
 
@@ -121,6 +124,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             showErrorMessage(getString(R.string.no_internet_connection));
         }
 
+
+    }
+
+    private void loadFavourites()
+    {
 
     }
 
