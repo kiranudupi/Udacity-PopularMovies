@@ -1,12 +1,42 @@
 package in.kirankumard.popularmovies_udacity.Model;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+@Entity(tableName = "Movies")
 public class Movie implements Parcelable {
-    private int mId, mVoteCount;
-    private double mVoteAverage, mPopularity;
-    private String mPosterPath, mOriginalTitle, mOverview, mReleaseDate, mBackdropPath;
+    @PrimaryKey(autoGenerate = true)
+    public int id;
+
+    @ColumnInfo(name = "MOVIE_ID")
+    public int mId;
+
+    @ColumnInfo(name = "VOTE_COUNT")
+    public int mVoteCount;
+
+    @ColumnInfo(name = "VOTE_AVERAGE")
+    public double mVoteAverage;
+
+    @ColumnInfo(name = "POPULARITY")
+    public double mPopularity;
+
+    @ColumnInfo(name = "POSTER_PATH")
+    public String mPosterPath;
+
+    @ColumnInfo(name = "ORIGINAL_TITLE")
+    public String mOriginalTitle;
+
+    @ColumnInfo(name = "OVERVIEW")
+    public String mOverview;
+
+    @ColumnInfo(name = "RELEASE_DATE")
+    public String mReleaseDate;
+
+    @ColumnInfo(name = "BACKDROP_PATH")
+    public String mBackdropPath;
 
     public Movie(int mId, int mVoteCount, double mVoteAverage, double mPopularity, String mPosterPath, String mOriginalTitle, String mOverview, String mReleaseDate, String mBackdropPath) {
         this.mId = mId;

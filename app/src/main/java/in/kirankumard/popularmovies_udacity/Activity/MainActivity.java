@@ -1,10 +1,13 @@
 package in.kirankumard.popularmovies_udacity.Activity;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +24,7 @@ import butterknife.ButterKnife;
 import in.kirankumard.popularmovies_udacity.Adapters.MoviesAdapter;
 import in.kirankumard.popularmovies_udacity.Asynctasks.GetMovieDataAsyncTask;
 import in.kirankumard.popularmovies_udacity.Constants.Constants;
+import in.kirankumard.popularmovies_udacity.Database.MovieDatabase;
 import in.kirankumard.popularmovies_udacity.Interfaces.GetMovieDataInterface;
 import in.kirankumard.popularmovies_udacity.Interfaces.MovieClickListerner;
 import in.kirankumard.popularmovies_udacity.Model.Movie;
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tvRetryMovies;
 
     ArrayList<Movie> moviesArrayList;
+    ArrayList<Movie> favouriteMoviesArrayList;
 
     private RecyclerView.Adapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
@@ -129,7 +134,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void loadFavourites()
     {
-
+        favouriteMoviesArrayList = new ArrayList<>();
+        new GetFavouriteMovies().execute();
     }
 
     private void showErrorMessage(String errorMessage) {
@@ -171,10 +177,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void showFavouriteMovies() {
+        mAdapter = new MoviesAdapter(MainActivity.this, favouriteMoviesArrayList, this);
+        runOnUiThread(() -> {
+            llErrorMessageParent.setVisibility(View.GONE);
+            rvMoviesRecyclerView.setVisibility(View.VISIBLE);
+            rvMoviesRecyclerView.setAdapter(mAdapter);
+            pbLoadingMovies.setVisibility(View.GONE);
+        });
+
+    }
+
     @Override
     public void onMovieClick(int clickedMovieIndex) {
         Intent movieDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
         movieDetailIntent.putExtra(Constants.MOVIE_INTENT_KEY, moviesArrayList.get(clickedMovieIndex));
         startActivity(movieDetailIntent);
+    }
+
+    public class GetFavouriteMovies extends AsyncTask<Void, Void, ArrayList<Movie>>
+    {
+
+        @Override
+        protected ArrayList<Movie> doInBackground(Void... voids) {
+            MovieDatabase movieDatabase = MovieDatabase.getInstance(MainActivity.this);
+            favouriteMoviesArrayList = (ArrayList<Movie>) movieDatabase.dao().getFavouriteMovies();
+            Log.i("responseabc", "size: " + favouriteMoviesArrayList.size());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Movie> movies) {
+            super.onPostExecute(movies);
+            showFavouriteMovies();
+        }
     }
 }
