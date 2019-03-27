@@ -51,8 +51,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView.Adapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
 
+    private boolean isFavourite = false;
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(Constants.IS_FAVOURITE_SELECTED_KEY,isFavourite);
+        if(favouriteMoviesArrayList != null)
+            outState.putParcelableArrayList(Constants.BUNDLE_FAVOURITE_MOVIES_ARRAYLIST_KEY, favouriteMoviesArrayList);
         if (moviesArrayList != null)
             outState.putParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY, moviesArrayList);
         if(mLayoutManager != null)
@@ -90,12 +95,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     switch (menuItem.getItemId()) {
                         case R.id.popularity:
                             loadMovies(R.string.movied_db_url_popularity);
+                            isFavourite = false;
                             return true;
                         case R.id.rating:
                             loadMovies(R.string.movied_db_url_rating);
+                            isFavourite = false;
                             return true;
                         case R.id.favourites:
                             loadFavourites();
+                            isFavourite = true;
                             return true;
                     }
                     return true;
