@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tvRetryMovies;
 
     ArrayList<Movie> moviesArrayList;
-    ArrayList<Movie> favouriteMoviesArrayList;
+    LiveData<ArrayList<Movie>> favouriteMoviesArrayList;
 
     private RecyclerView.Adapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(Constants.IS_FAVOURITE_SELECTED_KEY,isFavourite);
-        if(favouriteMoviesArrayList != null)
-            outState.putParcelableArrayList(Constants.BUNDLE_FAVOURITE_MOVIES_ARRAYLIST_KEY, favouriteMoviesArrayList);
+//        if(favouriteMoviesArrayList != null)
+//            outState.putParcelableArrayList(Constants.BUNDLE_FAVOURITE_MOVIES_ARRAYLIST_KEY, favouriteMoviesArrayList);
         if (moviesArrayList != null)
             outState.putParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY, moviesArrayList);
         if(mLayoutManager != null)
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected ArrayList<Movie> doInBackground(Void... voids) {
             MovieDatabase movieDatabase = MovieDatabase.getInstance(MainActivity.this);
-            favouriteMoviesArrayList = (ArrayList<Movie>) movieDatabase.dao().getFavouriteMovies();
+            favouriteMoviesArrayList = movieDatabase.dao().getFavouriteMovies();
             Log.i("responseabc", "size: " + favouriteMoviesArrayList.size());
             return null;
         }

@@ -14,7 +14,7 @@ import in.kirankumard.popularmovies_udacity.Model.Movie;
 public interface MovieDao {
 
     @Query("SELECT * FROM Movies")
-    List<Movie> getFavouriteMovies();
+    LiveData<List<Movie>> getFavouriteMovies();
 
     @Insert
     void insertMovie(Movie movie);
