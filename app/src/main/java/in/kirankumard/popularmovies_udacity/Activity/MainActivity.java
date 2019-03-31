@@ -2,6 +2,7 @@ package in.kirankumard.popularmovies_udacity.Activity;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
@@ -34,6 +35,7 @@ import in.kirankumard.popularmovies_udacity.Model.Movie;
 import in.kirankumard.popularmovies_udacity.R;
 import in.kirankumard.popularmovies_udacity.Utils.SpacesItemDecoration;
 import in.kirankumard.popularmovies_udacity.Utils.Utils;
+import in.kirankumard.popularmovies_udacity.Viewmodel.FavouriteViewModel;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GetMovieDataInterface, MovieClickListerner {
 
@@ -49,18 +51,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tvRetryMovies;
 
     ArrayList<Movie> moviesArrayList;
-    LiveData<List<Movie>> favouriteMoviesArrayList = null;
+    List<Movie> favouriteMoviesArrayList = null;
 
     private MoviesAdapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
 
     private boolean isFavourite = false;
 
+    FavouriteViewModel favouriteViewModel;
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(Constants.IS_FAVOURITE_SELECTED_KEY,isFavourite);
-//        if(favouriteMoviesArrayList != null)
+//        if(favouriteMoviesArrayList != null)IS_FAVOURITE_SELECTED_KEY
 //            outState.putParcelableArrayList(Constants.BUNDLE_FAVOURITE_MOVIES_ARRAYLIST_KEY, favouriteMoviesArrayList);
+        if(isFavourite)
+            outState.putBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE,true);
         if (moviesArrayList != null)
             outState.putParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY, moviesArrayList);
         if(mLayoutManager != null)
@@ -73,13 +79,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupUi();
-        if (savedInstanceState == null || !savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
+
+        if(savedInstanceState == null)
+        {
             loadMovies(R.string.movied_db_url_popularity);
-        else {
-            moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
-            mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
-            showMovies();
         }
+        else
+        {
+            if(savedInstanceState.containsKey(Constants.BUNDLE_IS_FAVOURITE_ACTIVE) && savedInstanceState.getBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE))
+            {
+                isFavourite = true;
+                new GetFavouriteMovies().execute();
+            }
+            else if (!savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
+                loadMovies(R.string.movied_db_url_popularity);
+            else {
+                moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
+                mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
+                showMovies();
+            }
+            {
+
+            }
+        }
+//        if(savedInstanceState != null)
+//        {
+//            if(savedInstanceState.containsKey(Constants.BUNDLE_IS_FAVOURITE_ACTIVE) && savedInstanceState.getBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE))
+//            {
+//                isFavourite = true;
+//                new GetFavouriteMovies().execute();
+//            }
+//            else
+//            {
+//                if (savedInstanceState == null || !savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
+//                    loadMovies(R.string.movied_db_url_popularity);
+//                else {
+//                    moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
+//                    mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
+//                    showMovies();
+//                }
+//            }
+//        }
+
+
+
     }
 
     @Override
@@ -108,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             return true;
                         case R.id.favourites:
                             getSupportActionBar().setTitle(getResources().getString(R.string.app_title_favourites));
-                           showFavouriteMovies(favouriteMoviesArrayList.getValue());
+                           showFavouriteMovies(favouriteMoviesArrayList);
                             //loadFavourites();
                             isFavourite = true;
                             return true;
@@ -127,11 +170,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        if(isFavourite)
-        {
-            mAdapter.moviesArrayList = favouriteMoviesArrayList.getValue();
-            mAdapter.notifyDataSetChanged();
-        }
+//        if(isFavourite)
+//        {
+//            mAdapter.moviesArrayList = favouriteMoviesArrayList;
+//            mAdapter.notifyDataSetChanged();
+//        }
     }
 
     private void setupUi() {
@@ -216,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
-        Movie movie = isFavourite ?  favouriteMoviesArrayList.getValue().get(clickedMovieIndex) :  moviesArrayList.get(clickedMovieIndex);
+        Movie movie = isFavourite ?  favouriteMoviesArrayList.get(clickedMovieIndex) :  moviesArrayList.get(clickedMovieIndex);
         Intent movieDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
         movieDetailIntent.putExtra(Constants.MOVIE_INTENT_KEY, movie);
         startActivity(movieDetailIntent);
@@ -228,7 +271,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected LiveData<List<Movie>> doInBackground(Void... voids) {
             MovieDatabase movieDatabase = MovieDatabase.getInstance(MainActivity.this);
-            favouriteMoviesArrayList = movieDatabase.dao().getFavouriteMovies();
+
+//            favouriteMoviesArrayList = movieDatabase.dao().getFavouriteMovies();
 
             //Log.i("responseabc", "size: " + favouriteMoviesArrayList.getValue().size());
             return null;
@@ -237,13 +281,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(LiveData<List<Movie>> movies) {
             super.onPostExecute(movies);
-            favouriteMoviesArrayList.observe(MainActivity.this, new Observer<List<Movie>>() {
+            favouriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavouriteViewModel.class);
+            favouriteViewModel.getFavouriteMovies().observe(MainActivity.this, new Observer<List<Movie>>() {
                 @Override
                 public void onChanged(@Nullable List<Movie> movies) {
                     //showFavouriteMovies(movies);
+                    favouriteMoviesArrayList = movies;
                     if(isFavourite)
                     {
-                        mAdapter.moviesArrayList = movies;
+                        mAdapter = new MoviesAdapter(MainActivity.this, movies, MainActivity.this);
+                        //mAdapter.moviesArrayList = movies;
+
                         Log.i("responseabc", "items: " + movies.size());
                         mAdapter.notifyDataSetChanged();
                     }
