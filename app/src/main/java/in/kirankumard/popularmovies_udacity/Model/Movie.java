@@ -8,10 +8,11 @@ import android.os.Parcelable;
 
 @Entity(tableName = "Movies")
 public class Movie implements Parcelable {
-    @PrimaryKey(autoGenerate = true)
-    public int id;
+//    @PrimaryKey(autoGenerate = true)
+//    public int id;
 
     @ColumnInfo(name = "MOVIE_ID")
+    @PrimaryKey
     public int mId;
 
     @ColumnInfo(name = "VOTE_COUNT")

@@ -97,14 +97,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sortMenu.setOnMenuItemClickListener((MenuItem menuItem) -> {
                     switch (menuItem.getItemId()) {
                         case R.id.popularity:
+                            getSupportActionBar().setTitle(getResources().getString(R.string.app_title_popular));
                             loadMovies(R.string.movied_db_url_popularity);
                             isFavourite = false;
                             return true;
                         case R.id.rating:
+                            getSupportActionBar().setTitle(getResources().getString(R.string.app_title_top_rated));
                             loadMovies(R.string.movied_db_url_rating);
                             isFavourite = false;
                             return true;
                         case R.id.favourites:
+                            getSupportActionBar().setTitle(getResources().getString(R.string.app_title_favourites));
                            showFavouriteMovies(favouriteMoviesArrayList.getValue());
                             //loadFavourites();
                             isFavourite = true;
@@ -133,13 +136,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setupUi() {
         loadFavourites();
+        getSupportActionBar().setTitle(getResources().getString(R.string.app_title_popular));
         ButterKnife.bind(this);
         rvMoviesRecyclerView.setVisibility(View.VISIBLE);
         rvMoviesRecyclerView.setHasFixedSize(true);
         mLayoutManager = new GridLayoutManager(this, 2);
         rvMoviesRecyclerView.setLayoutManager(mLayoutManager);
-        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.movie_poster_spacing);
-        rvMoviesRecyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
+//        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.movie_poster_spacing);
+//        rvMoviesRecyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
         tvRetryMovies.setOnClickListener(this);
     }
 

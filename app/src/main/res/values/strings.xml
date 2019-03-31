@@ -22,4 +22,7 @@
     <string name="reviews_title">Reviews</string>
     <string name="movies_reviews_url_primary">https://api.themoviedb.org/3/movie/</string>
     <string name="movies_reviews_url_secondary">/reviews?api_key=</string>
+    <string name="app_title_popular">Popular</string>
+    <string name="app_title_top_rated">Top Rated</string>
+    <string name="app_title_favourites">Favourites</string>
 </resources>

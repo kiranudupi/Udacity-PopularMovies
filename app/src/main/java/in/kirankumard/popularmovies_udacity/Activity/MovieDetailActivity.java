@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -64,6 +65,8 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
 
     Movie movie;
 
+    boolean isMovieFavourited = false;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,24 +93,62 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         tvOverview.setText(movie.getmOverview());
 
         //ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.gray), android.graphics.PorterDuff.Mode.MULTIPLY);
-        ivFavourite.setOnClickListener(this);
+
         GetTrailersAsyncTask getTrailersAsyncTask = new GetTrailersAsyncTask(movie.getmId());
         getTrailersAsyncTask.execute();
 
         GetReviewsAsyncTask getReviewsAsyncTask = new GetReviewsAsyncTask(movie.getmId());
         getReviewsAsyncTask.execute();
 
+        new GetFavouriteInformation().execute(movie.mId);
+
     }
 
+    private void setUpFavouriteButton(Boolean movieCount) {
+        if (!movieCount) {
+            ivFavourite.setImageResource(R.drawable.baseline_favorite_border_white_24dp);
+            ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.white), android.graphics.PorterDuff.Mode.MULTIPLY);
+            isMovieFavourited = false;
+        } else {
+            ivFavourite.setImageResource(R.drawable.baseline_favorite_white_24dp);
+            ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.favourite), android.graphics.PorterDuff.Mode.MULTIPLY);
+            isMovieFavourited = true;
+        }
+        ivFavourite.setVisibility(ImageView.VISIBLE);
+        ivFavourite.setOnClickListener(this);
+    }
+
+    private class GetFavouriteInformation extends AsyncTask<Integer, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Integer... ints) {
+            MovieDatabase movieDatabase = MovieDatabase.getInstance(MovieDetailActivity.this);
+            //Log.i("responseabc", "Movie id: " + movie.id);
+            Log.i("responseabc", "Async id: " + ints[0]);
+            List<Movie> movies = movieDatabase.dao().getMovieById(ints[0]);
+            Log.i("responseabc", "movies size: " + movies.size());
+            if (movies == null)
+                return false;
+            if(movies.size() == 0)
+                return false;
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean movieCount) {
+            super.onPostExecute(movieCount);
+            setUpFavouriteButton(movieCount);
+        }
+    }
+
+
     void showTrailers(ArrayList<String> trailersArray) {
-        if(trailersArray != null)
-        {
+        if (trailersArray != null) {
             for (int i = 0; i < trailersArray.size(); i++) {
                 TextView trailer = new TextView(MovieDetailActivity.this);
                 LinearLayout.LayoutParams trailerLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 trailer.setLayoutParams(trailerLayoutParams);
                 trailer.setPadding(8, 16, 8, 16);
-                trailer.setText("Trailer " + (i+1));
+                trailer.setText("Trailer " + (i + 1));
                 trailer.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_black_18dp, 0, 0, 0);
                 String url = getResources().getString(R.string.trailers_url) + trailersArray.get(i);
                 //String url = "https://www.youtube.com/watch?v=K_tLp7T6U1c";
@@ -125,18 +166,16 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         }
 
 
-
     }
 
     void showReviews(ArrayList<String> reviewsArray) {
-        if(reviewsArray != null)
-        {
+        if (reviewsArray != null) {
             for (int i = 0; i < reviewsArray.size(); i++) {
                 TextView review = new TextView(MovieDetailActivity.this);
                 LinearLayout.LayoutParams trailerLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                trailerLayoutParams.setMargins(0,0,0,16);
+                trailerLayoutParams.setMargins(0, 0, 0, 16);
                 review.setLayoutParams(trailerLayoutParams);
-                review.setPadding(32,32,32,32);
+                review.setPadding(32, 32, 32, 32);
                 review.setBackgroundColor(getResources().getColor(R.color.white));
                 review.setText(reviewsArray.get(i));
                 //trailer.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_black_18dp, 0, 0, 0);
@@ -155,22 +194,46 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         }
 
 
-
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId())
-        {
+        switch (v.getId()) {
             case R.id.iv_favourite:
-                ivFavourite.setImageResource(R.drawable.baseline_favorite_white_24dp);
-                ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.favourite), android.graphics.PorterDuff.Mode.MULTIPLY);
-                new SetFavouriteAsyncTask().execute();
+
+                new AddRemoveFavourite().execute(isMovieFavourited);
+
+//                ivFavourite.setImageResource(R.drawable.baseline_favorite_white_24dp);
+//                ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.favourite), android.graphics.PorterDuff.Mode.MULTIPLY);
+//                new SetFavouriteAsyncTask().execute();
                 break;
         }
     }
 
-    public class GetTrailersAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
+    private class AddRemoveFavourite extends AsyncTask<Boolean, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Boolean... isFavourited) {
+            MovieDatabase movieDatabase = MovieDatabase.getInstance(MovieDetailActivity.this);
+            Log.i("responseabc", "boolean " + isFavourited[0]);
+            if (isFavourited[0]) {
+                movieDatabase.dao().deleteMovie(movie);
+                return false;
+            } else {
+                movieDatabase.dao().insertMovie(movie);
+                return true;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean setFavourite) {
+            super.onPostExecute(setFavourite);
+
+            setUpFavouriteButton(setFavourite);
+        }
+    }
+
+    private class GetTrailersAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
 
         int movieID;
         private String mResponse;
@@ -206,8 +269,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
             } catch (
                     IOException e) {
                 Log.v("responseabc", "3");
-            }
-            finally {
+            } finally {
 
             }
             return null;
@@ -257,8 +319,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
             } catch (
                     IOException e) {
                 Log.v("responseabc", "6");
-            }
-            finally {
+            } finally {
 
             }
             return null;
@@ -271,8 +332,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    public class SetFavouriteAsyncTask extends AsyncTask<Void, Void, Void>
-    {
+    public class SetFavouriteAsyncTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
