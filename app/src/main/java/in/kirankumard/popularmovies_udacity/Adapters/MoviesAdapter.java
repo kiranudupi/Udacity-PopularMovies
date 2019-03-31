@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import in.kirankumard.popularmovies_udacity.Interfaces.MovieClickListerner;
 import in.kirankumard.popularmovies_udacity.Model.Movie;
@@ -19,11 +20,11 @@ import in.kirankumard.popularmovies_udacity.R;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
 
-    private ArrayList<Movie> moviesArrayList;
+    public List<Movie> moviesArrayList;
     private Context mContext;
     final MovieClickListerner movieClickListerner;
 
-    public MoviesAdapter(Context context, ArrayList<Movie> moviesArrayList, MovieClickListerner movieClickListerner)
+    public MoviesAdapter(Context context, List<Movie> moviesArrayList, MovieClickListerner movieClickListerner)
     {
         this.mContext = context;
         this.moviesArrayList = moviesArrayList;

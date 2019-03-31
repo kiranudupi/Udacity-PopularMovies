@@ -81,6 +81,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         Picasso.with(this).load(getString(R.string.movie_backdrop_url) + movie.getmBackdropPath())
                 .placeholder(R.drawable.picasso_placeholder)
                 .error(R.drawable.picasso_error)
+                .fit()
                 .into(ivMovieBackdrop);
         tvTitle.setText(movie.getmOriginalTitle());
         tvRatingValue.setText(String.format(Locale.US, "%.2f", movie.getmVoteAverage()));
@@ -88,7 +89,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         tvReleaseDate.setText(getString(R.string.movie_release_date, movie.getmReleaseDate()));
         tvOverview.setText(movie.getmOverview());
 
-        ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.gray), android.graphics.PorterDuff.Mode.MULTIPLY);
+        //ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.gray), android.graphics.PorterDuff.Mode.MULTIPLY);
         ivFavourite.setOnClickListener(this);
         GetTrailersAsyncTask getTrailersAsyncTask = new GetTrailersAsyncTask(movie.getmId());
         getTrailersAsyncTask.execute();
@@ -162,7 +163,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         switch (v.getId())
         {
             case R.id.iv_favourite:
-                ivFavourite.setImageResource(R.drawable.baseline_favorite_white_18dp);
+                ivFavourite.setImageResource(R.drawable.baseline_favorite_white_24dp);
                 ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.favourite), android.graphics.PorterDuff.Mode.MULTIPLY);
                 new SetFavouriteAsyncTask().execute();
                 break;

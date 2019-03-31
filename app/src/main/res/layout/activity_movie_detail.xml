@@ -25,12 +25,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="@dimen/padding_16dp"
-            android:layout_marginEnd="@dimen/padding_16dp"
+            android:layout_marginTop="@dimen/small_padding"
+            android:layout_marginEnd="@dimen/small_padding"
             android:padding="@dimen/small_padding"
-            android:background="@color/white"
-            android:tint="@color/gray"
-            android:src="@drawable/baseline_favorite_border_white_18dp" />
+            android:tint="@color/white"
+            android:src="@drawable/baseline_favorite_border_white_24dp" />
 
         <LinearLayout
             android:id="@+id/ll_rating_main_parent"

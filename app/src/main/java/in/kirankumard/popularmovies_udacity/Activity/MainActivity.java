@@ -1,8 +1,10 @@
 package in.kirankumard.popularmovies_udacity.Activity;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,9 +49,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tvRetryMovies;
 
     ArrayList<Movie> moviesArrayList;
-    LiveData<ArrayList<Movie>> favouriteMoviesArrayList;
+    LiveData<List<Movie>> favouriteMoviesArrayList = null;
 
-    private RecyclerView.Adapter mAdapter;
+    private MoviesAdapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
 
     private boolean isFavourite = false;
@@ -102,7 +105,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             isFavourite = false;
                             return true;
                         case R.id.favourites:
-                            loadFavourites();
+                           showFavouriteMovies(favouriteMoviesArrayList.getValue());
+                            //loadFavourites();
                             isFavourite = true;
                             return true;
                     }
@@ -117,7 +121,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isFavourite)
+        {
+            mAdapter.moviesArrayList = favouriteMoviesArrayList.getValue();
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
     private void setupUi() {
+        loadFavourites();
         ButterKnife.bind(this);
         rvMoviesRecyclerView.setVisibility(View.VISIBLE);
         rvMoviesRecyclerView.setHasFixedSize(true);
@@ -142,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void loadFavourites()
     {
-        favouriteMoviesArrayList = new ArrayList<>();
         new GetFavouriteMovies().execute();
     }
 
@@ -185,8 +199,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void showFavouriteMovies() {
-        mAdapter = new MoviesAdapter(MainActivity.this, favouriteMoviesArrayList, this);
+    private void showFavouriteMovies(List<Movie> movies) {
+        mAdapter = new MoviesAdapter(MainActivity.this, movies, this);
         runOnUiThread(() -> {
             llErrorMessageParent.setVisibility(View.GONE);
             rvMoviesRecyclerView.setVisibility(View.VISIBLE);
@@ -198,26 +212,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
+        Movie movie = isFavourite ?  favouriteMoviesArrayList.getValue().get(clickedMovieIndex) :  moviesArrayList.get(clickedMovieIndex);
         Intent movieDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
-        movieDetailIntent.putExtra(Constants.MOVIE_INTENT_KEY, moviesArrayList.get(clickedMovieIndex));
+        movieDetailIntent.putExtra(Constants.MOVIE_INTENT_KEY, movie);
         startActivity(movieDetailIntent);
     }
 
-    public class GetFavouriteMovies extends AsyncTask<Void, Void, ArrayList<Movie>>
+    public class GetFavouriteMovies extends AsyncTask<Void, Void, LiveData<List<Movie>>>
     {
 
         @Override
-        protected ArrayList<Movie> doInBackground(Void... voids) {
+        protected LiveData<List<Movie>> doInBackground(Void... voids) {
             MovieDatabase movieDatabase = MovieDatabase.getInstance(MainActivity.this);
             favouriteMoviesArrayList = movieDatabase.dao().getFavouriteMovies();
-            Log.i("responseabc", "size: " + favouriteMoviesArrayList.size());
+
+            //Log.i("responseabc", "size: " + favouriteMoviesArrayList.getValue().size());
             return null;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
+        protected void onPostExecute(LiveData<List<Movie>> movies) {
             super.onPostExecute(movies);
-            showFavouriteMovies();
+            favouriteMoviesArrayList.observe(MainActivity.this, new Observer<List<Movie>>() {
+                @Override
+                public void onChanged(@Nullable List<Movie> movies) {
+                    //showFavouriteMovies(movies);
+                    if(isFavourite)
+                    {
+                        mAdapter.moviesArrayList = movies;
+                        Log.i("responseabc", "items: " + movies.size());
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+
         }
     }
 }
