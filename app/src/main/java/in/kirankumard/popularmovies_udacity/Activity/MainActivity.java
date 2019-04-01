@@ -62,14 +62,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(Constants.IS_FAVOURITE_SELECTED_KEY,isFavourite);
+        outState.putBoolean(Constants.IS_FAVOURITE_SELECTED_KEY, isFavourite);
 //        if(favouriteMoviesArrayList != null)IS_FAVOURITE_SELECTED_KEY
 //            outState.putParcelableArrayList(Constants.BUNDLE_FAVOURITE_MOVIES_ARRAYLIST_KEY, favouriteMoviesArrayList);
-        if(isFavourite)
-            outState.putBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE,true);
+        if (isFavourite)
+            outState.putBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE, true);
         if (moviesArrayList != null)
             outState.putParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY, moviesArrayList);
-        if(mLayoutManager != null)
+        if (mLayoutManager != null)
             outState.putParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION, mLayoutManager.onSaveInstanceState());
         super.onSaveInstanceState(outState);
     }
@@ -89,7 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(savedInstanceState.containsKey(Constants.BUNDLE_IS_FAVOURITE_ACTIVE) && savedInstanceState.getBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE))
             {
                 isFavourite = true;
-                new GetFavouriteMovies().execute();
+                setUpFavouriteViewModel();
+                //new GetFavouriteMovies().execute();
             }
             else if (!savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
                 loadMovies(R.string.movied_db_url_popularity);
@@ -97,9 +98,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
                 mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
                 showMovies();
-            }
-            {
-
             }
         }
 //        if(savedInstanceState != null)
@@ -120,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                }
 //            }
 //        }
-
 
 
     }
@@ -151,8 +148,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             return true;
                         case R.id.favourites:
                             getSupportActionBar().setTitle(getResources().getString(R.string.app_title_favourites));
-                           showFavouriteMovies(favouriteMoviesArrayList);
+                            //showFavouriteMovies(favouriteMoviesArrayList);
                             //loadFavourites();
+                            setUpFavouriteViewModel();
                             isFavourite = true;
                             return true;
                     }
@@ -178,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setupUi() {
-        loadFavourites();
+        //loadFavourites();
         getSupportActionBar().setTitle(getResources().getString(R.string.app_title_popular));
         ButterKnife.bind(this);
         rvMoviesRecyclerView.setVisibility(View.VISIBLE);
@@ -202,9 +200,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void loadFavourites()
-    {
-        new GetFavouriteMovies().execute();
+    private void loadFavourites() {
+        setUpFavouriteViewModel();
+        // new GetFavouriteMovies().execute();
     }
 
     private void showErrorMessage(String errorMessage) {
@@ -259,14 +257,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
-        Movie movie = isFavourite ?  favouriteMoviesArrayList.get(clickedMovieIndex) :  moviesArrayList.get(clickedMovieIndex);
+        Movie movie = isFavourite ? favouriteMoviesArrayList.get(clickedMovieIndex) : moviesArrayList.get(clickedMovieIndex);
         Intent movieDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
         movieDetailIntent.putExtra(Constants.MOVIE_INTENT_KEY, movie);
         startActivity(movieDetailIntent);
     }
 
-    public class GetFavouriteMovies extends AsyncTask<Void, Void, LiveData<List<Movie>>>
-    {
+    private void setUpFavouriteViewModel() {
+        favouriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavouriteViewModel.class);
+        favouriteViewModel.getFavouriteMovies().observe(MainActivity.this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(@Nullable List<Movie> movies) {
+                //showFavouriteMovies(movies);
+Log.i("responseabc", "loaded from viewmodel");
+                mAdapter = new MoviesAdapter(MainActivity.this, movies, MainActivity.this);
+                rvMoviesRecyclerView.setAdapter(mAdapter);
+            }
+        });
+    }
+
+//    private void setupFavouriteViewModel()
+//    {
+//        favouriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavouriteViewModel.class);
+//        favouriteViewModel.getFavouriteMovies().observe(MainActivity.this, new Observer<List<Movie>>() {
+//            @Override
+//            public void onChanged(@Nullable List<Movie> movies) {
+//                //showFavouriteMovies(movies);
+//                favouriteMoviesArrayList = movies;
+//                //if(isFavourite)
+//                //{
+//                mAdapter = new MoviesAdapter(MainActivity.this, movies, MainActivity.this);
+//                //mAdapter.moviesArrayList = movies;
+//
+//                Log.i("responseabc", "items: " + movies.size());
+//                //mAdapter.notifyDataSetChanged();
+//                //}
+//            }
+//        });
+//    }
+
+    public class GetFavouriteMovies extends AsyncTask<Void, Void, LiveData<List<Movie>>> {
 
         @Override
         protected LiveData<List<Movie>> doInBackground(Void... voids) {
@@ -287,14 +317,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void onChanged(@Nullable List<Movie> movies) {
                     //showFavouriteMovies(movies);
                     favouriteMoviesArrayList = movies;
-                    if(isFavourite)
-                    {
-                        mAdapter = new MoviesAdapter(MainActivity.this, movies, MainActivity.this);
-                        //mAdapter.moviesArrayList = movies;
+                    //if(isFavourite)
+                    //{
+                    mAdapter = new MoviesAdapter(MainActivity.this, movies, MainActivity.this);
+                    //mAdapter.moviesArrayList = movies;
 
-                        Log.i("responseabc", "items: " + movies.size());
-                        mAdapter.notifyDataSetChanged();
-                    }
+                    Log.i("responseabc", "items: " + movies.size());
+                    //mAdapter.notifyDataSetChanged();
+                    //}
                 }
             });
 
