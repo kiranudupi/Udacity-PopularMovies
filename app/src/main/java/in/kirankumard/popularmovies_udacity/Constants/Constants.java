@@ -15,15 +15,12 @@ public class Constants {
 
     public static final String MOVIE_INTENT_KEY = "movie";
     public static final String BUNDLE_MOVIES_ARRAYLIST_KEY = "moviesArrayList";
-    public static final String BUNDLE_FAVOURITE_MOVIES_ARRAYLIST_KEY = "favoutireMoviesArrayList";
-    public static final String BUNDLE_IS_FAVOURITE_ACTIVE = "isFavouriteActive";
     public static final String BUNDLE_RECYCLERVIEW_POSITION = "recyclerviewPosition";
 
     public static final String TRAILER_TYPE_KEY = "type";
     public static final String TRAILER_TYPE_VALUE = "Trailer";
     public static final String TRAILER_KEY = "key";
     public static final String REVIEW_KEY = "content";
-    public static final String IS_FAVOURITE_SELECTED_KEY = "IS_FAVOURITE_SELECTED";
     public static final String CURRENT_ACTIVE_LIST_KEY = "CURRENT_ACTIVE_LIST";
 
 

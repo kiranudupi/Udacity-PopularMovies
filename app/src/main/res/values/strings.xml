@@ -25,4 +25,5 @@
     <string name="app_title_popular">Most Popular</string>
     <string name="app_title_top_rated">Highest Rated</string>
     <string name="app_title_favourites">Favourites</string>
+    <string name="trailer_prefix">Trailer %d</string>
 </resources>

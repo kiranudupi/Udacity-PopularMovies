@@ -42,7 +42,7 @@ public class Utils {
     }
 
     public static ArrayList<Movie> parseMovieJson(String movieJsonString) {
-        ArrayList<Movie> moviesArrayList = new ArrayList<Movie>();
+        ArrayList<Movie> moviesArrayList = new ArrayList<>();
         try {
             JSONObject response = new JSONObject(movieJsonString);
             JSONArray results = response.getJSONArray(Constants.RESULT_KEY);
@@ -57,7 +57,7 @@ public class Utils {
     }
 
     public static ArrayList<String> parseTrailerJson(String trailerJson) {
-        ArrayList<String> trailersArraylist = new ArrayList<String>();
+        ArrayList<String> trailersArraylist = new ArrayList<>();
         try {
             JSONObject response = new JSONObject(trailerJson);
             JSONArray results = response.getJSONArray(Constants.RESULT_KEY);
@@ -76,7 +76,7 @@ public class Utils {
     }
 
     public static ArrayList<String> parseReviewsJson(String reviewsJson) {
-        ArrayList<String> trailersArraylist = new ArrayList<String>();
+        ArrayList<String> trailersArraylist = new ArrayList<>();
         try {
             JSONObject response = new JSONObject(reviewsJson);
             JSONArray results = response.getJSONArray(Constants.RESULT_KEY);

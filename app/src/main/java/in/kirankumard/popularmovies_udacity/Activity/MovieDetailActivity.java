@@ -63,9 +63,9 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     @BindView(R.id.iv_favourite)
     ImageView ivFavourite;
 
-    Movie movie;
+    private Movie movie;
 
-    boolean isMovieFavourited = false;
+    private boolean isMovieFavourite = false;
 
 
     @Override
@@ -79,7 +79,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         ButterKnife.bind(this);
         Objects.requireNonNull(getSupportActionBar()).setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        movie = (Movie) getIntent().getParcelableExtra(Constants.MOVIE_INTENT_KEY);
+        movie = getIntent().getParcelableExtra(Constants.MOVIE_INTENT_KEY);
         getSupportActionBar().setTitle(movie.getmOriginalTitle());
         Picasso.with(this).load(getString(R.string.movie_backdrop_url) + movie.getmBackdropPath())
                 .placeholder(R.drawable.picasso_placeholder)
@@ -92,8 +92,6 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         tvReleaseDate.setText(getString(R.string.movie_release_date, movie.getmReleaseDate()));
         tvOverview.setText(movie.getmOverview());
 
-        //ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.gray), android.graphics.PorterDuff.Mode.MULTIPLY);
-
         GetTrailersAsyncTask getTrailersAsyncTask = new GetTrailersAsyncTask(movie.getmId());
         getTrailersAsyncTask.execute();
 
@@ -101,18 +99,17 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         getReviewsAsyncTask.execute();
 
         new GetFavouriteInformation().execute(movie.mId);
-
     }
 
     private void setUpFavouriteButton(Boolean movieCount) {
         if (!movieCount) {
             ivFavourite.setImageResource(R.drawable.baseline_favorite_border_white_24dp);
             ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.white), android.graphics.PorterDuff.Mode.MULTIPLY);
-            isMovieFavourited = false;
+            isMovieFavourite = false;
         } else {
             ivFavourite.setImageResource(R.drawable.baseline_favorite_white_24dp);
             ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.favourite), android.graphics.PorterDuff.Mode.MULTIPLY);
-            isMovieFavourited = true;
+            isMovieFavourite = true;
         }
         ivFavourite.setVisibility(ImageView.VISIBLE);
         ivFavourite.setOnClickListener(this);
@@ -122,15 +119,8 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         @Override
         protected Boolean doInBackground(Integer... ints) {
             MovieDatabase movieDatabase = MovieDatabase.getInstance(MovieDetailActivity.this);
-            //Log.i("responseabc", "Movie id: " + movie.id);
-            Log.i("responseabc", "Async id: " + ints[0]);
             List<Movie> movies = movieDatabase.dao().getMovieById(ints[0]);
-            Log.i("responseabc", "movies size: " + movies.size());
-            if (movies == null)
-                return false;
-            if(movies.size() == 0)
-                return false;
-            return true;
+            return movies.size() != 0;
         }
 
         @Override
@@ -141,34 +131,28 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    void showTrailers(ArrayList<String> trailersArray) {
+    private void showTrailers(ArrayList<String> trailersArray) {
         if (trailersArray != null) {
             for (int i = 0; i < trailersArray.size(); i++) {
                 TextView trailer = new TextView(MovieDetailActivity.this);
                 LinearLayout.LayoutParams trailerLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 trailer.setLayoutParams(trailerLayoutParams);
                 trailer.setPadding(8, 16, 8, 16);
-                trailer.setText("Trailer " + (i + 1));
+                trailer.setText(getResources().getString(R.string.trailer_prefix, (i + 1)));
                 trailer.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_black_18dp, 0, 0, 0);
                 String url = getResources().getString(R.string.trailers_url) + trailersArray.get(i);
-                //String url = "https://www.youtube.com/watch?v=K_tLp7T6U1c";
-                trailer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        Log.i("responseabc", url);
-                        i.setData(Uri.parse(url));
-                        startActivity(i);
-                    }
+                trailer.setOnClickListener(v -> {
+                    Intent i1 = new Intent(Intent.ACTION_VIEW);
+                    Log.i("responseabc", url);
+                    i1.setData(Uri.parse(url));
+                    startActivity(i1);
                 });
                 llTrailersParent.addView(trailer);
             }
         }
-
-
     }
 
-    void showReviews(ArrayList<String> reviewsArray) {
+    private void showReviews(ArrayList<String> reviewsArray) {
         if (reviewsArray != null) {
             for (int i = 0; i < reviewsArray.size(); i++) {
                 TextView review = new TextView(MovieDetailActivity.this);
@@ -178,34 +162,22 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                 review.setPadding(32, 32, 32, 32);
                 review.setBackgroundColor(getResources().getColor(R.color.white));
                 review.setText(reviewsArray.get(i));
-                //trailer.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_black_18dp, 0, 0, 0);
-                //String url = getResources().getString(R.string.trailers_url) + trailersArray.get(i);
                 String url = "https://www.youtube.com/watch?v=K_tLp7T6U1c";
-                review.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(url));
-                        startActivity(i);
-                    }
+                review.setOnClickListener(v -> {
+                    Intent i1 = new Intent(Intent.ACTION_VIEW);
+                    i1.setData(Uri.parse(url));
+                    startActivity(i1);
                 });
                 llReviewsParent.addView(review);
             }
         }
-
-
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_favourite:
-
-                new AddRemoveFavourite().execute(isMovieFavourited);
-
-//                ivFavourite.setImageResource(R.drawable.baseline_favorite_white_24dp);
-//                ivFavourite.setColorFilter(ContextCompat.getColor(MovieDetailActivity.this, R.color.favourite), android.graphics.PorterDuff.Mode.MULTIPLY);
-//                new SetFavouriteAsyncTask().execute();
+                new AddRemoveFavourite().execute(isMovieFavourite);
                 break;
         }
     }
@@ -215,7 +187,6 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         @Override
         protected Boolean doInBackground(Boolean... isFavourited) {
             MovieDatabase movieDatabase = MovieDatabase.getInstance(MovieDetailActivity.this);
-            Log.i("responseabc", "boolean " + isFavourited[0]);
             if (isFavourited[0]) {
                 movieDatabase.dao().deleteMovie(movie);
                 return false;
@@ -228,7 +199,6 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         @Override
         protected void onPostExecute(Boolean setFavourite) {
             super.onPostExecute(setFavourite);
-
             setUpFavouriteButton(setFavourite);
         }
     }
@@ -246,10 +216,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         protected ArrayList<String> doInBackground(Void... voids) {
             try {
                 URL url = new URL(getResources().getString(R.string.movies_trailer_url_primary) + this.movieID + getResources().getString(R.string.movies_trailer_url_secondary) + getResources().getString(R.string.api_key));
-                Log.v("responseabc", url.toString());
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                //urlConnection.setDoInput(true);
-                //urlConnection.setDoOutput(true);
                 urlConnection.setRequestProperty("Content-Type", "application/json");
                 urlConnection.setRequestMethod("GET");
 
@@ -259,26 +226,18 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
 
                     InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                     mResponse = Utils.convertInputStreamToString(inputStream);
-
-                    Log.v("responseabc", mResponse);
-                    Log.v("responseabc", "");
                     return Utils.parseTrailerJson(mResponse);
                 } else {
-                    Log.v("responseabc", "2 " + statusCode + "\n" + mResponse);
+                    return null;
                 }
-            } catch (
-                    IOException e) {
-                Log.v("responseabc", "3");
-            } finally {
-
+            } catch (IOException e) {
+                return null;
             }
-            return null;
         }
 
         @Override
         protected void onPostExecute(ArrayList<String> strings) {
             super.onPostExecute(strings);
-            Log.i("responseabc", "trailers: " + strings);
             showTrailers(strings);
         }
     }
@@ -296,10 +255,7 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
         protected ArrayList<String> doInBackground(Void... voids) {
             try {
                 URL url = new URL(getResources().getString(R.string.movies_reviews_url_primary) + this.movieID + getResources().getString(R.string.movies_reviews_url_secondary) + getResources().getString(R.string.api_key));
-                Log.v("responseabc", url.toString());
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                //urlConnection.setDoInput(true);
-                //urlConnection.setDoOutput(true);
                 urlConnection.setRequestProperty("Content-Type", "application/json");
                 urlConnection.setRequestMethod("GET");
 
@@ -309,20 +265,13 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
 
                     InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                     mResponse = Utils.convertInputStreamToString(inputStream);
-
-                    Log.v("responseabc", mResponse);
-                    Log.v("responseabc", "4");
                     return Utils.parseReviewsJson(mResponse);
                 } else {
-                    Log.v("responseabc", "5 " + statusCode);
+                    return null;
                 }
-            } catch (
-                    IOException e) {
-                Log.v("responseabc", "6");
-            } finally {
-
+            } catch (IOException e) {
+                return null;
             }
-            return null;
         }
 
         @Override
@@ -331,15 +280,4 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
             showReviews(strings);
         }
     }
-
-    public class SetFavouriteAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            MovieDatabase movieDatabase = MovieDatabase.getInstance(MovieDetailActivity.this);
-            movieDatabase.dao().insertMovie(movie);
-            return null;
-        }
-    }
-
 }

@@ -11,7 +11,6 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import in.kirankumard.popularmovies_udacity.Interfaces.MovieClickListerner;
@@ -20,9 +19,9 @@ import in.kirankumard.popularmovies_udacity.R;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
 
-    public List<Movie> moviesArrayList;
+    private List<Movie> moviesArrayList;
     private Context mContext;
-    final MovieClickListerner movieClickListerner;
+    final private MovieClickListerner movieClickListerner;
 
     public MoviesAdapter(Context context, List<Movie> moviesArrayList, MovieClickListerner movieClickListerner)
     {
@@ -53,8 +52,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     @Override
     public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         FrameLayout frameLayout = (FrameLayout) LayoutInflater.from(this.mContext).inflate(R.layout.movie_item,viewGroup,false);
-        MovieViewHolder movieViewHolder = new MovieViewHolder(frameLayout);
-        return movieViewHolder;
+        return new MovieViewHolder(frameLayout);
     }
 
     @Override
