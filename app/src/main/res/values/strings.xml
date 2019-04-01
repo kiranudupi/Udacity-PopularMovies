@@ -12,8 +12,8 @@
     <string name="movies_trailer_url_secondary">/videos?api_key=</string>
     <string name="movie_poster_url">https://image.tmdb.org/t/p/w185/</string>
     <string name="movie_backdrop_url">https://image.tmdb.org/t/p/original/</string>
-    <string name="popularity_menu_item">Popularity</string>
-    <string name="rating_menu_item">Rating</string>
+    <string name="popularity_menu_item">Most Popular</string>
+    <string name="rating_menu_item">Highest Rated</string>
     <string name="favourites_menu_item">Favourites</string>
     <string name="movie_vote">%d votes</string>
     <string name="movie_release_date">Released On: %s</string>

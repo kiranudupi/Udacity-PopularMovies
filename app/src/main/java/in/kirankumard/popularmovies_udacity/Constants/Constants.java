@@ -24,6 +24,8 @@ public class Constants {
     public static final String TRAILER_KEY = "key";
     public static final String REVIEW_KEY = "content";
     public static final String IS_FAVOURITE_SELECTED_KEY = "IS_FAVOURITE_SELECTED";
+    public static final String CURRENT_ACTIVE_LIST_KEY = "CURRENT_ACTIVE_LIST";
+
 
 
 }

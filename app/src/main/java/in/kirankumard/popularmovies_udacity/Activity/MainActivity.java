@@ -56,17 +56,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MoviesAdapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
 
-    private boolean isFavourite = false;
+    //private boolean isFavourite = false;
 
     FavouriteViewModel favouriteViewModel;
 
+    final int POPULAR = 0, RATED = 1, FAVOURITES = 2;
+
+    int currentActiveList;
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(Constants.IS_FAVOURITE_SELECTED_KEY, isFavourite);
+        //outState.putBoolean(Constants.IS_FAVOURITE_SELECTED_KEY, isFavourite);
+        outState.putInt(Constants.CURRENT_ACTIVE_LIST_KEY, currentActiveList);
 //        if(favouriteMoviesArrayList != null)IS_FAVOURITE_SELECTED_KEY
 //            outState.putParcelableArrayList(Constants.BUNDLE_FAVOURITE_MOVIES_ARRAYLIST_KEY, favouriteMoviesArrayList);
-        if (isFavourite)
-            outState.putBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE, true);
+//        if (isFavourite)
+//            outState.putBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE, true);
         if (moviesArrayList != null)
             outState.putParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY, moviesArrayList);
         if (mLayoutManager != null)
@@ -80,25 +85,87 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         setupUi();
 
-        if(savedInstanceState == null)
-        {
+        if (savedInstanceState == null) {
+            currentActiveList = POPULAR;
+            getSupportActionBar().setTitle(getResources().getString(R.string.app_title_popular));
             loadMovies(R.string.movied_db_url_popularity);
-        }
-        else
-        {
-            if(savedInstanceState.containsKey(Constants.BUNDLE_IS_FAVOURITE_ACTIVE) && savedInstanceState.getBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE))
-            {
-                isFavourite = true;
-                setUpFavouriteViewModel();
-                //new GetFavouriteMovies().execute();
-            }
-            else if (!savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
+
+        } else {
+            /*
+            if(contains key current active)
+                switch(current active)
+                    popular:
+                        if(contains key BUNDLE_MOVIES_ARRAYLIST_KEY)
+                            load from local
+                        else
+                            loadMovies()
+                        currentActive = POPULAR
+                    rated:
+                        if(contains key BUNDLE_MOVIES_ARRAYLIST_KEY)
+                            load from local
+                        else
+                            loadMovies()
+                        currentActive = RATED
+                    favourite:
+                        setUpFavouriteViewModel()
+                        currentActive = FAVOURITE
+            else
+                loadMovies
+                currentActive = POPULAR
+
+            */
+            if (savedInstanceState.containsKey(Constants.CURRENT_ACTIVE_LIST_KEY)) {
+                switch (savedInstanceState.getInt(Constants.CURRENT_ACTIVE_LIST_KEY)) {
+                    case POPULAR:
+                        currentActiveList = POPULAR;
+                        getSupportActionBar().setTitle(getResources().getString(R.string.app_title_popular));
+                        if (!savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
+                            loadMovies(R.string.movied_db_url_popularity);
+                        else {
+                            moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
+                            mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
+                            showMovies();
+                        }
+
+                        break;
+                    case RATED:
+                        currentActiveList = RATED;
+                        getSupportActionBar().setTitle(getResources().getString(R.string.app_title_top_rated));
+                        if (!savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
+                            loadMovies(R.string.movied_db_url_rating);
+                        else {
+                            moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
+                            mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
+                            showMovies();
+                        }
+
+                        break;
+                    case FAVOURITES:
+                        currentActiveList = FAVOURITES;
+                        setUpFavouriteViewModel();
+
+                        getSupportActionBar().setTitle(getResources().getString(R.string.app_title_favourites));
+                        break;
+
+                }
+            } else {
                 loadMovies(R.string.movied_db_url_popularity);
-            else {
-                moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
-                mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
-                showMovies();
+                currentActiveList = POPULAR;
+                getSupportActionBar().setTitle(getResources().getString(R.string.app_title_popular));
             }
+//            if(savedInstanceState.containsKey(Constants.BUNDLE_IS_FAVOURITE_ACTIVE) && savedInstanceState.getBoolean(Constants.BUNDLE_IS_FAVOURITE_ACTIVE))
+//            {
+//                isFavourite = true;
+//                setUpFavouriteViewModel();
+//                //new GetFavouriteMovies().execute();
+//            }
+//            else if (!savedInstanceState.containsKey(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY))
+//                loadMovies(R.string.movied_db_url_popularity);
+//            else {
+//                moviesArrayList = savedInstanceState.getParcelableArrayList(Constants.BUNDLE_MOVIES_ARRAYLIST_KEY);
+//                mLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(Constants.BUNDLE_RECYCLERVIEW_POSITION));
+//                showMovies();
+//            }
         }
 //        if(savedInstanceState != null)
 //        {
@@ -137,21 +204,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sortMenu.setOnMenuItemClickListener((MenuItem menuItem) -> {
                     switch (menuItem.getItemId()) {
                         case R.id.popularity:
+                            currentActiveList = POPULAR;
                             getSupportActionBar().setTitle(getResources().getString(R.string.app_title_popular));
                             loadMovies(R.string.movied_db_url_popularity);
-                            isFavourite = false;
+
                             return true;
                         case R.id.rating:
+                            currentActiveList = RATED;
                             getSupportActionBar().setTitle(getResources().getString(R.string.app_title_top_rated));
                             loadMovies(R.string.movied_db_url_rating);
-                            isFavourite = false;
+
                             return true;
                         case R.id.favourites:
+                            currentActiveList = FAVOURITES;
                             getSupportActionBar().setTitle(getResources().getString(R.string.app_title_favourites));
                             //showFavouriteMovies(favouriteMoviesArrayList);
                             //loadFavourites();
                             setUpFavouriteViewModel();
-                            isFavourite = true;
+
                             return true;
                     }
                     return true;
@@ -257,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onMovieClick(int clickedMovieIndex) {
-        Movie movie = isFavourite ? favouriteMoviesArrayList.get(clickedMovieIndex) : moviesArrayList.get(clickedMovieIndex);
+        Movie movie = currentActiveList == FAVOURITES ? favouriteMoviesArrayList.get(clickedMovieIndex) : moviesArrayList.get(clickedMovieIndex);
         Intent movieDetailIntent = new Intent(MainActivity.this, MovieDetailActivity.class);
         movieDetailIntent.putExtra(Constants.MOVIE_INTENT_KEY, movie);
         startActivity(movieDetailIntent);
@@ -269,9 +339,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onChanged(@Nullable List<Movie> movies) {
                 //showFavouriteMovies(movies);
-Log.i("responseabc", "loaded from viewmodel");
-                mAdapter = new MoviesAdapter(MainActivity.this, movies, MainActivity.this);
-                rvMoviesRecyclerView.setAdapter(mAdapter);
+                Log.i("responseabc", "loaded from viewmodel");
+                if (currentActiveList == FAVOURITES) {
+                    mAdapter = new MoviesAdapter(MainActivity.this, movies, MainActivity.this);
+                    rvMoviesRecyclerView.setAdapter(mAdapter);
+                    favouriteMoviesArrayList = movies;
+                }
+
             }
         });
     }
