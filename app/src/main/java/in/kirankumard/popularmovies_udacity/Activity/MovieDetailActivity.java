@@ -142,10 +142,10 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                 trailer.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_black_18dp, 0, 0, 0);
                 String url = getResources().getString(R.string.trailers_url) + trailersArray.get(i);
                 trailer.setOnClickListener(v -> {
-                    Intent i1 = new Intent(Intent.ACTION_VIEW);
-                    Log.i("responseabc", url);
-                    i1.setData(Uri.parse(url));
-                    startActivity(i1);
+                    Intent trailerIntent = new Intent(Intent.ACTION_VIEW);
+                    trailerIntent.setData(Uri.parse(url));
+                    if(trailerIntent.resolveActivity(getPackageManager()) != null)
+                        startActivity(trailerIntent);
                 });
                 llTrailersParent.addView(trailer);
             }
@@ -162,12 +162,6 @@ public class MovieDetailActivity extends AppCompatActivity implements View.OnCli
                 review.setPadding(32, 32, 32, 32);
                 review.setBackgroundColor(getResources().getColor(R.color.white));
                 review.setText(reviewsArray.get(i));
-                String url = "https://www.youtube.com/watch?v=K_tLp7T6U1c";
-                review.setOnClickListener(v -> {
-                    Intent i1 = new Intent(Intent.ACTION_VIEW);
-                    i1.setData(Uri.parse(url));
-                    startActivity(i1);
-                });
                 llReviewsParent.addView(review);
             }
         }
